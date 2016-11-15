@@ -44,7 +44,7 @@ class CompositeObjectService
 
         $objectsResponse = $response = $cmsRestClient->get('composite-object/objects', [
             'query' => [
-                '_sort[position]' => 'desc',
+                '_sort[position]' => 'asc',
                 'className'       => $className
             ]
         ]);
