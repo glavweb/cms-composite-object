@@ -11,6 +11,7 @@
 
 namespace Glavweb\CmsCompositeObject\Service;
 
+use Glavweb\CmsCompositeObject\Helper\MarkupFixtureHelper;
 use Glavweb\CmsRestClient\CmsRestClient;
 
 /**
@@ -27,11 +28,34 @@ class CompositeObjectService
     private $cmsRestClient;
 
     /**
-     * CompositeObjectService constructor.
+     * @var bool
      */
-    public function __construct(CmsRestClient $cmsRestClient)
+    private $markupMode;
+
+    /**
+     * @var array
+     */
+    private $fixtureObjects;
+
+    /**
+     * @var MarkupFixtureHelper
+     */
+    private $markupFixtureHelper;
+
+    /**
+     * CompositeObjectService constructor.
+     *
+     * @param CmsRestClient       $cmsRestClient
+     * @param bool                $markupMode
+     * @param array               $fixtureObjects
+     * @param MarkupFixtureHelper $markupFixtureHelper
+     */
+    public function __construct(CmsRestClient $cmsRestClient, MarkupFixtureHelper $markupFixtureHelper, $markupMode = false, $fixtureObjects = [])
     {
-        $this->cmsRestClient = $cmsRestClient;
+        $this->cmsRestClient       = $cmsRestClient;
+        $this->markupMode          = $markupMode;
+        $this->fixtureObjects      = $fixtureObjects;
+        $this->markupFixtureHelper = $markupFixtureHelper;
     }
 
     /**
@@ -40,6 +64,16 @@ class CompositeObjectService
      */
     public function getObjectsByClassName($className)
     {
+        if ($this->markupMode) {
+            if (!$this->fixtureObjects[$className]['class']) {
+                throw new \RuntimeException(sprintf('The fixture object for class name "%s" not found', $className));
+            }
+
+            $fixture = $this->fixtureObjects[$className];
+
+            return $this->markupFixtureHelper->prepareFixtureForMarkup($fixture);
+        }
+
         $cmsRestClient = $this->cmsRestClient;
 
         $objectsResponse = $response = $cmsRestClient->get('composite-object/objects', [
