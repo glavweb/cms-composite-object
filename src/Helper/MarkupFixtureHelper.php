@@ -11,6 +11,21 @@ namespace Glavweb\CmsCompositeObject\Helper;
 class MarkupFixtureHelper extends AbstractFixtureHelper
 {
     /**
+     * @var string
+     */
+    private $basePath;
+
+    /**
+     * AbstractFixtureHelper constructor.
+     *
+     * @param string $basePath
+     */
+    public function __construct($basePath)
+    {
+        $this->basePath = $basePath;
+    }
+
+    /**
      * @param array $fixture
      * @return array
      */
@@ -139,5 +154,14 @@ class MarkupFixtureHelper extends AbstractFixtureHelper
         }
 
         return null;
+    }
+
+    /**
+     * @param string $fieldValue
+     * @return string
+     */
+    private function addBasePath($fieldValue)
+    {
+        return $this->basePath . '/' . $fieldValue;
     }
 }

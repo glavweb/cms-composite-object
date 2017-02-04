@@ -11,6 +11,21 @@ namespace Glavweb\CmsCompositeObject\Helper;
 class LoadFixtureHelper extends AbstractFixtureHelper
 {
     /**
+     * @var string
+     */
+    private $rootDir;
+
+    /**
+     * AbstractFixtureHelper constructor.
+     *
+     * @param string $rootDir
+     */
+    public function __construct($rootDir)
+    {
+        $this->rootDir = $rootDir;
+    }
+
+    /**
      * @param array $fixtures
      * @return array
      */
@@ -41,16 +56,20 @@ class LoadFixtureHelper extends AbstractFixtureHelper
     }
 
     /**
-     * @param string $value
+     * @param string $file
      * @return string
      */
-    private function prepareImageData($value)
+    private function prepareImageData($file)
     {
-        if (!$this->isExternalUri($value)) {
-            $value = $this->addBasePath($value);
+        if ($this->isExternalUri($file)) {
+            $imageContent = $this->getGetContentByCurl($file);
+
+        } else {
+            $file = $this->addRootDir($file);
+            $imageContent = file_get_contents($file);
         }
 
-        return $this->fileToBase($value);
+        return $this->convertToBase64($imageContent);
     }
 
     /**
@@ -68,13 +87,36 @@ class LoadFixtureHelper extends AbstractFixtureHelper
     }
 
     /**
-     * @param string $file
+     * @param string $fileContent
      * @return string
      */
-    private function fileToBase($file)
+    private function convertToBase64($fileContent)
     {
-        $imageData = file_get_contents($file);
+        return base64_encode($fileContent);
+    }
 
-        return base64_encode($imageData);
+    /**
+     * @param string $value
+     * @return string
+     */
+    private function addRootDir($value)
+    {
+        return $this->rootDir . '/' . $value;
+    }
+
+    /**
+     * @param string $file
+     * @return mixed
+     */
+    private function getGetContentByCurl($file)
+    {
+        $curl = curl_init();
+        curl_setopt($curl, CURLOPT_URL, $file);
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($curl, CURLOPT_HEADER, false);
+        $fileContent = curl_exec($curl);
+        curl_close($curl);
+
+        return $fileContent;
     }
 }

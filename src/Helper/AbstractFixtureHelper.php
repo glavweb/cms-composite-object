@@ -11,30 +11,6 @@ namespace Glavweb\CmsCompositeObject\Helper;
 abstract class AbstractFixtureHelper
 {
     /**
-     * @var string
-     */
-    private $basePath;
-
-    /**
-     * AbstractFixtureHelper constructor.
-     *
-     * @param string $basePath
-     */
-    public function __construct($basePath)
-    {
-        $this->basePath = $basePath;
-    }
-
-    /**
-     * @param string $fieldValue
-     * @return string
-     */
-    protected function addBasePath($fieldValue)
-    {
-        return $this->basePath . '/' . $fieldValue;
-    }
-
-    /**
      * @param string $uri
      * @return bool
      */
