@@ -73,7 +73,7 @@ class FixtureCommand extends Command
         $app = $this->silexApplication;
         $cmsRestClient = $app['cms.rest_client'];
         
-        $fixtures = include $app['fixture_objects_file'];
+        $fixtures = include $app['fixture.objects_file'];
         $fixtures = $this->loadFixtureHelper->prepareFixturesForLoad($fixtures);
         
         $response = $cmsRestClient->post('fixtures', [
