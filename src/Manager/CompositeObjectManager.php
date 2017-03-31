@@ -9,18 +9,18 @@
  * file that was distributed with this source code.
  */
 
-namespace Glavweb\CmsCompositeObject\Service;
+namespace Glavweb\CmsCompositeObject\Manager;
 
-use Glavweb\CmsCompositeObject\Helper\MarkupFixtureHelper;
 use Glavweb\CmsRestClient\CmsRestClient;
+use Glavweb\MarkupFixture\Helper\MarkupFixtureHelper;
 
 /**
- * Class CompositeObjectService
+ * Class CompositeObjectManager
  *
  * @package Glavweb\CmsCompositeObject
  * @author Andrey Nilov <nilov@glavweb.ru>
  */
-class CompositeObjectService
+class CompositeObjectManager
 {
     /**
      * @var CmsRestClient
@@ -43,7 +43,7 @@ class CompositeObjectService
     private $markupFixtureHelper;
 
     /**
-     * CompositeObjectService constructor.
+     * CompositeObjectManager constructor.
      *
      * @param CmsRestClient       $cmsRestClient
      * @param bool                $markupMode

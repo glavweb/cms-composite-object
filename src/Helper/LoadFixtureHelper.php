@@ -1,5 +1,14 @@
 <?php
 
+/*
+ * This file is part of the GLAVWEB.cms CmsCompositeObject package.
+ *
+ * (c) Andrey Nilov <nilov@glavweb.ru>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Glavweb\CmsCompositeObject\Helper;
 
 /**
@@ -8,7 +17,7 @@ namespace Glavweb\CmsCompositeObject\Helper;
  * @package Glavweb\CmsCompositeObject
  * @author Andrey Nilov <nilov@glavweb.ru>
  */
-class LoadFixtureHelper extends AbstractFixtureHelper
+class LoadFixtureHelper
 {
     /**
      * @var string
@@ -118,5 +127,34 @@ class LoadFixtureHelper extends AbstractFixtureHelper
         curl_close($curl);
 
         return $fileContent;
+    }
+
+    /**
+     * @param string $uri
+     * @return bool
+     */
+    private function isExternalUri($uri)
+    {
+        $components = parse_url($uri);
+
+        return isset($components['host']) && isset($components['scheme']);
+    }
+
+    /**
+     * @param array $class
+     * @param $fieldName
+     * @return array
+     */
+    private function getFieldDefinitionByName(array $class, $fieldName)
+    {
+        $fields = $class['fields'];
+
+        foreach ($fields as $fieldDefinition) {
+            if ($fieldDefinition['name'] == $fieldName) {
+                return $fieldDefinition;
+            }
+        }
+
+        throw new \RuntimeException(sprintf('The field definition "%s" is not defined.', $fieldName));
     }
 }

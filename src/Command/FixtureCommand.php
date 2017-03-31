@@ -1,5 +1,14 @@
 <?php
 
+/*
+ * This file is part of the GLAVWEB.cms CmsCompositeObject package.
+ *
+ * (c) Andrey Nilov <nilov@glavweb.ru>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Glavweb\CmsCompositeObject\Command;
 
 use Symfony\Component\Console\Command\Command;
@@ -62,7 +71,7 @@ class FixtureCommand extends Command
         /** @var CmsRestClient $cmsRestClient */
         /** @var Session $session */
         $app = $this->silexApplication;
-        $cmsRestClient = $app['cms_rest_client'];
+        $cmsRestClient = $app['cms.rest_client'];
         
         $fixtures = include $app['fixture_objects_file'];
         $fixtures = $this->loadFixtureHelper->prepareFixturesForLoad($fixtures);

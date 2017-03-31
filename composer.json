@@ -15,7 +15,8 @@
     "require": {
         "php": ">=5.5.9",
         "guzzlehttp/guzzle": "^6.0",
-        "glavweb/cms-rest-client": "~0.1"
+        "glavweb/cms-rest-client": "~0.1",
+        "glavweb/markup-fixture": "~0.2"
     },
     "autoload": {
         "psr-4": { "Glavweb\\CmsCompositeObject\\": "src/" }
