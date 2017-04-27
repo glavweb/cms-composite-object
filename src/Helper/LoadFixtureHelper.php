@@ -25,13 +25,38 @@ class LoadFixtureHelper
     private $rootDir;
 
     /**
+     * @var bool
+     */
+    private $asBase64;
+
+    /**
      * AbstractFixtureHelper constructor.
      *
      * @param string $rootDir
+     * @param bool $asBase64
      */
-    public function __construct($rootDir)
+    public function __construct($rootDir, $asBase64 = true)
     {
-        $this->rootDir = $rootDir;
+        $this->rootDir  = $rootDir;
+        $this->asBase64 = $asBase64;
+    }
+
+    /**
+     * @param array $fixture
+     * @return array
+     */
+    public function getFixtureClassesOnly(array $fixture)
+    {
+        $fixtureClassesOnly = [];
+        foreach ($fixture as $fixtureNamespace => $fixtureItem) {
+            $classData = $fixtureItem['class'];
+
+            $fixtureClassesOnly[$fixtureNamespace] = [
+                'class' => $classData
+            ];
+        }
+
+        return $fixtureClassesOnly;
     }
 
     /**
@@ -45,17 +70,7 @@ class LoadFixtureHelper
             $instances = isset($fixture['instances']) ? $fixture['instances'] : [];
 
             foreach ($instances as $instanceKey => $instance) {
-                foreach ($instance as $fieldName => $fieldValue) {
-                    $fieldDefinition = $this->getFieldDefinitionByName($class, $fieldName);
-                    $fieldType = $fieldDefinition['type'];
-
-                    if ($fieldType == 'image') {
-                        $fixtures[$fixtureName]['instances'][$instanceKey][$fieldName] = $this->prepareImageData($fieldValue);
-
-                    } elseif ($fieldType == 'image_collection') {
-                        $fixtures[$fixtureName]['instances'][$instanceKey][$fieldName] = $this->prepareImageCollectionData($fieldValue);
-                    }
-                }
+                $fixtures[$fixtureName]['instances'][$instanceKey] = $this->prepareFixtureInstanceForLoad($instance, $class);
 
                 $fixtures[$fixtureName]['instances'] = array_reverse($fixtures[$fixtureName]['instances']);
             }
@@ -70,15 +85,23 @@ class LoadFixtureHelper
      */
     private function prepareImageData($file)
     {
-        if ($this->isExternalUri($file)) {
-            $imageContent = $this->getGetContentByCurl($file);
+        if ($this->asBase64) {
+            if ($this->isExternalUri($file)) {
+                $imageContent = $this->getGetContentByCurl($file);
 
-        } else {
-            $file = $this->addRootDir($file);
-            $imageContent = file_get_contents($file);
+            } else {
+                $file = $this->addRootDir($file);
+                $imageContent = file_get_contents($file);
+            }
+
+            return $this->convertToBase64($imageContent);
         }
 
-        return $this->convertToBase64($imageContent);
+        if (!$this->isExternalUri($file)) {
+            $file = $this->addRootDir($file);
+        }
+
+        return $file;
     }
 
     /**
@@ -156,5 +179,27 @@ class LoadFixtureHelper
         }
 
         throw new \RuntimeException(sprintf('The field definition "%s" is not defined.', $fieldName));
+    }
+
+    /**
+     * @param array $instance
+     * @param array $class
+     * @return array
+     */
+    public function prepareFixtureInstanceForLoad(array $instance, array $class)
+    {
+        foreach ($instance as $fieldName => $fieldValue) {
+            $fieldDefinition = $this->getFieldDefinitionByName($class, $fieldName);
+            $fieldType = $fieldDefinition['type'];
+
+            if ($fieldType == 'image') {
+                $instance[$fieldName] = $this->prepareImageData($fieldValue);
+
+            } elseif ($fieldType == 'image_collection') {
+                $instance[$fieldName] = $this->prepareImageCollectionData($fieldValue);
+            }
+        }
+
+        return $instance;
     }
 }
