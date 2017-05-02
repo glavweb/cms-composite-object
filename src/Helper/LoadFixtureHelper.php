@@ -35,7 +35,7 @@ class LoadFixtureHelper
      * @param string $rootDir
      * @param bool $asBase64
      */
-    public function __construct($rootDir, $asBase64 = true)
+    public function __construct(string $rootDir, bool $asBase64 = true)
     {
         $this->rootDir  = $rootDir;
         $this->asBase64 = $asBase64;
@@ -45,7 +45,7 @@ class LoadFixtureHelper
      * @param array $fixture
      * @return array
      */
-    public function getFixtureClassesOnly(array $fixture)
+    public function getFixtureClassesOnly(array $fixture): array
     {
         $fixtureClassesOnly = [];
         foreach ($fixture as $fixtureNamespace => $fixtureItem) {
@@ -63,7 +63,7 @@ class LoadFixtureHelper
      * @param array $fixtures
      * @return array
      */
-    public function prepareFixturesForLoad(array $fixtures)
+    public function prepareFixturesForLoad(array $fixtures): array
     {
         foreach ($fixtures as $fixtureName => $fixture) {
             $class     = $fixture['class'];
@@ -83,7 +83,7 @@ class LoadFixtureHelper
      * @param string $file
      * @return string
      */
-    private function prepareImageData($file)
+    private function prepareImageData(string $file): string
     {
         if ($this->asBase64) {
             if ($this->isExternalUri($file)) {
@@ -108,7 +108,7 @@ class LoadFixtureHelper
      * @param array $collection
      * @return array
      */
-    private function prepareImageCollectionData($collection)
+    private function prepareImageCollectionData(array $collection): array
     {
         $prepared = [];
         foreach ($collection as $image) {
@@ -122,7 +122,7 @@ class LoadFixtureHelper
      * @param string $fileContent
      * @return string
      */
-    private function convertToBase64($fileContent)
+    private function convertToBase64(string $fileContent): string
     {
         return base64_encode($fileContent);
     }
@@ -131,7 +131,7 @@ class LoadFixtureHelper
      * @param string $value
      * @return string
      */
-    private function addRootDir($value)
+    private function addRootDir(string $value): string
     {
         return $this->rootDir . '/' . $value;
     }
@@ -140,7 +140,7 @@ class LoadFixtureHelper
      * @param string $file
      * @return mixed
      */
-    private function getGetContentByCurl($file)
+    private function getGetContentByCurl(string $file)
     {
         $curl = curl_init();
         curl_setopt($curl, CURLOPT_URL, $file);
@@ -156,7 +156,7 @@ class LoadFixtureHelper
      * @param string $uri
      * @return bool
      */
-    private function isExternalUri($uri)
+    private function isExternalUri(string $uri): bool
     {
         $components = parse_url($uri);
 
@@ -165,10 +165,10 @@ class LoadFixtureHelper
 
     /**
      * @param array $class
-     * @param $fieldName
+     * @param string $fieldName
      * @return array
      */
-    private function getFieldDefinitionByName(array $class, $fieldName)
+    private function getFieldDefinitionByName(array $class, string $fieldName): array
     {
         $fields = $class['fields'];
 
@@ -186,7 +186,7 @@ class LoadFixtureHelper
      * @param array $class
      * @return array
      */
-    public function prepareFixtureInstanceForLoad(array $instance, array $class)
+    public function prepareFixtureInstanceForLoad(array $instance, array $class): array
     {
         foreach ($instance as $fieldName => $fieldValue) {
             $fieldDefinition = $this->getFieldDefinitionByName($class, $fieldName);

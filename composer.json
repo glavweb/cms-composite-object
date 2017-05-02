@@ -13,7 +13,7 @@
         }
     ],
     "require": {
-        "php": ">=5.5.9",
+        "php": ">=7.1",
         "guzzlehttp/guzzle": "^6.0",
         "glavweb/cms-rest-client": "~0.1",
         "glavweb/markup-fixture": "~0.2"

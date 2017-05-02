@@ -53,7 +53,7 @@ class FixtureCommand extends Command
     /**
      * Configuring the Command
      */
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->setName('fixture')
@@ -65,6 +65,7 @@ class FixtureCommand extends Command
     /**
      * @param InputInterface $input
      * @param OutputInterface $output
+     * @return int|null
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {

@@ -28,6 +28,11 @@ class CompositeObjectManager
     private $cmsRestClient;
 
     /**
+     * @var MarkupFixtureHelper
+     */
+    private $markupFixtureHelper;
+
+    /**
      * @var bool
      */
     private $markupMode;
@@ -38,31 +43,31 @@ class CompositeObjectManager
     private $fixtureObjects;
 
     /**
-     * @var MarkupFixtureHelper
-     */
-    private $markupFixtureHelper;
-
-    /**
      * CompositeObjectManager constructor.
      *
      * @param CmsRestClient       $cmsRestClient
+     * @param MarkupFixtureHelper $markupFixtureHelper
      * @param bool                $markupMode
      * @param array               $fixtureObjects
-     * @param MarkupFixtureHelper $markupFixtureHelper
      */
-    public function __construct(CmsRestClient $cmsRestClient, MarkupFixtureHelper $markupFixtureHelper, $markupMode = false, $fixtureObjects = [])
+    public function __construct(CmsRestClient $cmsRestClient, MarkupFixtureHelper $markupFixtureHelper, bool $markupMode = false, array $fixtureObjects = [])
     {
         $this->cmsRestClient       = $cmsRestClient;
         $this->markupMode          = $markupMode;
-        $this->fixtureObjects      = $fixtureObjects;
         $this->markupFixtureHelper = $markupFixtureHelper;
+        $this->fixtureObjects      = $fixtureObjects;
     }
 
     /**
      * @param string $className
+     * @param array $filter
+     * @param array $sort
+     * @param int|null $limit
+     * @param int|null $skip
+     * @param array $projection
      * @return array
      */
-    public function getObjectsByClassName($className)
+    public function getObjects(string $className, array $filter = [], $sort = [], int $limit = null, int $skip = null, array $projection = []): array
     {
         if ($this->markupMode) {
             if (!$this->fixtureObjects[$className]['class']) {
@@ -76,13 +81,36 @@ class CompositeObjectManager
 
         $cmsRestClient = $this->cmsRestClient;
 
-        $objectsResponse = $response = $cmsRestClient->get('composite-object/objects', [
+        $objectsResponse = $response = $cmsRestClient->get('composite-objects/' . $className, [
             'query' => [
-                '_sort[position]' => 'asc',
-                'className'       => $className
+                'filter'     => $filter,
+                'sort'       => $sort,
+                'limit'      => $limit,
+                'skip'       => $skip,
+                'projection' => $projection
             ]
         ]);
-        $objectList = \GuzzleHttp\json_decode($objectsResponse->getBody(), true);
+        $objectList = (array)\GuzzleHttp\json_decode($objectsResponse->getBody(), true);
+
+        return $objectList;
+    }
+
+    /**
+     * @param string $className
+     * @param array  $projection
+     * @param int    $id
+     * @return array
+     */
+    public function getObject(string $className, int $id, array $projection = []): array
+    {
+        $cmsRestClient = $this->cmsRestClient;
+
+        $objectsResponse = $response = $cmsRestClient->get('composite-objects/' . $className . '/id/' . $id, [
+            'query' => [
+                'projection' => $projection
+            ]
+        ]);
+        $objectList = (array)\GuzzleHttp\json_decode($objectsResponse->getBody(), true);
 
         return $objectList;
     }
@@ -90,10 +118,10 @@ class CompositeObjectManager
     /**
      * Editable block
      *
-     * @param int $id
+     * @param int|string $id
      * @return string
      */
-    public function editable($id)
+    public function editable($id): string
     {
         $attributes = [];
         $attributes['data-content-object']    = 'true';
