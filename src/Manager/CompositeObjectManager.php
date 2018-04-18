@@ -83,11 +83,11 @@ class CompositeObjectManager
 
         $objectsResponse = $response = $cmsRestClient->get('composite-objects/' . $className, [
             'query' => [
-                'filter'     => $filter,
-                'sort'       => $sort,
+                'filter'     => json_encode($filter),
+                'sort'       => json_encode($sort),
                 'limit'      => $limit,
                 'skip'       => $skip,
-                'projection' => $projection
+                'projection' => json_encode($projection)
             ]
         ]);
         $objectList = (array)\GuzzleHttp\json_decode($objectsResponse->getBody(), true);
@@ -105,7 +105,7 @@ class CompositeObjectManager
     {
         $cmsRestClient = $this->cmsRestClient;
 
-        $objectsResponse = $response = $cmsRestClient->get('composite-objects/' . $className . '/id/' . $id, [
+        $objectsResponse = $response = $cmsRestClient->get('composite-objects/' . $className . '/' . $id, [
             'query' => [
                 'projection' => $projection
             ]
